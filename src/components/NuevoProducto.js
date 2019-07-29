@@ -1,10 +1,82 @@
 import React, { Component } from "react";
 
+import { connect } from 'react-redux';
+import { agregarProducto } from '../actions/productosActions';
+
 class NuevoProducto extends Component{
+    state = {
+        nombre: '',
+        precio: '',
+        error: false
+    }
+    nombreProducto = event =>{
+        this.setState({
+            nombre: event.target.value
+        })        
+    }
+    precioProducto = event =>{
+        this.setState({
+            precio: event.target.value
+        })
+    }
+    actualizarProducto = event =>{
+        event.preventDefault();
+        const { nombre, precio } = this.state;
+
+        if(nombre === '' || precio === ''){
+            this.setState({
+                error:true
+            });
+            return;
+        }
+        this.setState({
+            error:false
+        })
+        //Crear el objeto
+        const infoProducto = {
+            nombre,
+            precio
+        }
+        // console.log(infoProducto);
+        
+        //Crear el nuevo producto
+        this.props.agregarProducto(infoProducto);
+
+        //Redireccionar
+        this.props.history.push('/');
+    }
     render(){
+        const {error} = this.state;
         return(
-            <h1>Desde Nuevo Producto</h1>
+            <div className="row justify-content-center mt-5">
+                <div className="col-md-8">
+                    <div className="card">
+                        <div className="card-body">
+                            <h2 className="text-center">Agregar Nuevo Producto</h2>
+                            <form onSubmit={this.actualizarProducto}>
+                                <div className="form-group">
+                                    <label>Titulo</label>
+                                    <input onChange={this.nombreProducto} type="text" className="form-control" placeholder="Titulo" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Precio del Producto</label>
+                                    <input onChange={this.precioProducto} type="text" className="form-control" placeholder="Precio" />
+                                </div>
+                                <button type="submit" className="btn btn-primary font-weight-bold text-uppercase d-block w-100">Agregar</button>
+                            </form>
+                            {error?
+                                <div>
+                                    Todos los campos son Obligatorios
+                                </div>
+                                :
+                                ''
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         )   
     }    
 }
-export default NuevoProducto;
+export default connect(null, { agregarProducto })(NuevoProducto);
